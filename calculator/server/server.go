@@ -25,6 +25,22 @@ func (*server) Sum(ctx context.Context, req *pb.NumRequest) (*pb.NumResponse, er
 	return res, nil
 }
 
+func (*server) PrimeNumber(req *pb.PrimeRequest, res pb.CalculatorService_PrimeNumberServer) error {
+	k := 2
+	n := int(req.GetNum())
+	for n > 1 {
+		if n%k == 0 {
+			res.Send(&pb.PrimeResponse{Num: float32(k)})
+			n = n / k
+		} else {
+			k = k + 1
+		}
+	}
+
+	return nil
+
+}
+
 func main() {
 
 	config := pb.GetSettings()

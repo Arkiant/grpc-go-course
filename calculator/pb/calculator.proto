@@ -12,6 +12,15 @@ message NumResponse {
     float result = 1;
 }
 
+message PrimeRequest {
+    float num = 1;
+}
+
+message PrimeResponse {
+    float num = 1;
+}
+
 service CalculatorService {
     rpc Sum(NumRequest) returns (NumResponse){};
+    rpc PrimeNumber(PrimeRequest) returns (stream PrimeResponse){};
 }

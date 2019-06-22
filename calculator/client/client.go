@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 
 	"github.com/arkiant/grpc-go-course/calculator/pb"
@@ -22,6 +23,13 @@ func main() {
 
 	c := pb.NewCalculatorServiceClient(cc)
 
+	//Sum(c)
+
+	PrimeNum(c)
+
+}
+
+func Sum(c pb.CalculatorServiceClient) {
 	req := &pb.NumRequest{
 		Num1: 3.0,
 		Num2: 10.0,
@@ -33,4 +41,28 @@ func main() {
 	}
 
 	log.Printf("Response from Sum: %v", res.Result)
+}
+
+func PrimeNum(c pb.CalculatorServiceClient) {
+	req := &pb.PrimeRequest{
+		Num: 120.0,
+	}
+
+	res, err := c.PrimeNumber(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error while call PrimeNumber function: %v", err)
+	}
+
+	for {
+		msg, err := res.Recv()
+
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Error while getting data from streaming: %v", err)
+		}
+
+		log.Printf("%s ", msg.GetNum())
+	}
 }

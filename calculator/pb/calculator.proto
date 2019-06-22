@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+option go_package="pb";
+
+message NumRequest {
+    float num1 = 1;
+    float num2 = 2;
+}
+
+message NumResponse {
+    float result = 1;
+}
+
+service CalculatorService {
+    rpc Sum(NumRequest) returns (NumResponse){};
+}

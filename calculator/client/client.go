@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
+	"time"
 
 	"github.com/arkiant/grpc-go-course/calculator/pb"
 
@@ -25,7 +27,9 @@ func main() {
 
 	//Sum(c)
 
-	PrimeNum(c)
+	//PrimeNum(c)
+
+	Average(c)
 
 }
 
@@ -65,4 +69,25 @@ func PrimeNum(c pb.CalculatorServiceClient) {
 
 		log.Printf("%s ", msg.GetNum())
 	}
+}
+
+func Average(c pb.CalculatorServiceClient) {
+	stream, err := c.Average(context.Background())
+	if err != nil {
+		log.Fatalf("Error getting client: %v", err)
+	}
+
+	numbers := []int32{1, 2, 3, 4}
+
+	for _, num := range numbers {
+		stream.Send(&pb.AverageRequest{Num: num})
+		time.Sleep(1 * time.Second)
+	}
+
+	res, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("Error receiving data: %v", err)
+	}
+
+	fmt.Printf("Average: %f", res.GetNum())
 }

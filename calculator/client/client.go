@@ -29,7 +29,9 @@ func main() {
 
 	//PrimeNum(c)
 
-	Average(c)
+	//Average(c)
+
+	FindMaximum(c)
 
 }
 
@@ -90,4 +92,48 @@ func Average(c pb.CalculatorServiceClient) {
 	}
 
 	fmt.Printf("Average: %f", res.GetNum())
+}
+
+/*
+FindMaximum function is a bidirectional stream implementation, this function send multiple integer numbers in parallel and receive the maximum number by the server
+*/
+func FindMaximum(c pb.CalculatorServiceClient) {
+	stream, err := c.FindMaximum(context.Background())
+	if err != nil {
+		log.Printf("Error while creating stream: %v", err)
+		return
+	}
+
+	waitc := make(chan struct{})
+
+	// Send go routine
+	go func() {
+		numbers := []int32{1, 5, 3, 6, 2, 20}
+		for _, num := range numbers {
+			stream.Send(&pb.FindMaximumRequest{
+				Num: num,
+			})
+		}
+		stream.CloseSend()
+	}()
+
+	// Receive go routine
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("Error while receiving: %v", err)
+				break
+			}
+
+			fmt.Printf("Received: %d\n", res.GetNum())
+		}
+
+		close(waitc)
+	}()
+
+	<-waitc
 }

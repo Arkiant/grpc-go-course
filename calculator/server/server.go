@@ -62,6 +62,37 @@ func (*server) Average(stream pb.CalculatorService_AverageServer) error {
 	}
 }
 
+/*
+FindMaximum function is a bidirectional stream implementation, this function receive multiple integers from the client and send the maximum number
+*/
+func (*server) FindMaximum(stream pb.CalculatorService_FindMaximumServer) error {
+
+	maxNumber := int32(0)
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			log.Fatalf("Error while reading number: %v", err)
+			return err
+		}
+
+		number := req.GetNum()
+		if number > maxNumber {
+			maxNumber = number
+			sendErr := stream.Send(&pb.FindMaximumResponse{Num: maxNumber})
+			if sendErr != nil {
+				log.Fatalf("Error while sending data to client stream: %v", err)
+				return err
+			}
+		}
+
+	}
+
+}
+
 func main() {
 
 	config := pb.GetSettings()

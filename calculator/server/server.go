@@ -2,9 +2,15 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
+	"math"
 	"net"
+
+	"google.golang.org/grpc/codes"
+
+	"google.golang.org/grpc/status"
 
 	"github.com/arkiant/grpc-go-course/calculator/pb"
 
@@ -91,6 +97,25 @@ func (*server) FindMaximum(stream pb.CalculatorService_FindMaximumServer) error 
 
 	}
 
+}
+
+/*
+SquareRoot is a function for error handling
+this RPC whill throw an exception if the sent number is negative
+The error being sent is of type INVALID_ARGUMENT
+*/
+func (*server) SquareRoot(ctx context.Context, req *pb.SquareRootRequest) (*pb.SquareRootResponse, error) {
+	fmt.Println("Received SquareRoot RPC")
+	number := req.GetNumber()
+	if number < 0 {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			fmt.Sprintf("Received a negative number: %d", number),
+		)
+	}
+	return &pb.SquareRootResponse{
+		NumberRoot: math.Sqrt(float64(number)),
+	}, nil
 }
 
 func main() {

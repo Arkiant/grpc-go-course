@@ -7,6 +7,10 @@ import (
 	"log"
 	"time"
 
+	"google.golang.org/grpc/codes"
+
+	"google.golang.org/grpc/status"
+
 	"github.com/arkiant/grpc-go-course/calculator/pb"
 
 	"google.golang.org/grpc"
@@ -31,7 +35,9 @@ func main() {
 
 	//Average(c)
 
-	FindMaximum(c)
+	//FindMaximum(c)
+
+	doErrorUnary(c)
 
 }
 
@@ -136,4 +142,34 @@ func FindMaximum(c pb.CalculatorServiceClient) {
 	}()
 
 	<-waitc
+}
+
+func doErrorUnary(c pb.CalculatorServiceClient) {
+	// corretc call
+	doErrorCall(c, 10)
+
+	// error call
+	doErrorCall(c, -30)
+}
+
+func doErrorCall(c pb.CalculatorServiceClient, number int32) {
+
+	res, err := c.SquareRoot(context.Background(), &pb.SquareRootRequest{Number: number})
+	if err != nil {
+		respErr, ok := status.FromError(err)
+		if ok {
+			// actual error from gRPC (user error)
+			fmt.Printf("[Server error] %s\n", respErr.Message())
+			fmt.Printf("[Server code] %v\n", respErr.Code())
+			if respErr.Code() == codes.InvalidArgument {
+				fmt.Println("We probably sent a negative number!")
+				return
+			}
+		} else {
+			log.Fatalf("Big Error calling SquareRoot: %v", err)
+			return
+		}
+	}
+
+	fmt.Printf("Result of square root of %v: %v\n", number, res.GetNumberRoot())
 }

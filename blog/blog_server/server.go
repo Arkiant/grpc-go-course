@@ -8,6 +8,8 @@ import (
 	"os/signal"
 
 	"github.com/arkiant/grpc-go-course/blog/blogpb"
+
+	"github.com/arkiant/grpc-go-course/blog/database"
 	"google.golang.org/grpc"
 )
 
@@ -18,8 +20,11 @@ func main() {
 	// If we crash the go code, we get the file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	fmt.Println("Blog Service Started")
+	fmt.Println("Conecting to MongoDB")
+	collection := database.MongoCollection()
+	fmt.Printf("Conected to: %s\n", collection.Name())
 
+	fmt.Println("Blog Service Started")
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -47,5 +52,7 @@ func main() {
 	s.Stop()
 	fmt.Println("Stopping the listener")
 	lis.Close()
+	fmt.Println("Closing MongoDB Connection")
+	database.CloseConnection()
 	fmt.Println("End of Program")
 }

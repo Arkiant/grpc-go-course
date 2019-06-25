@@ -32,7 +32,7 @@ func main() {
 	go func() {
 		fmt.Println("Starting Server...")
 		if err := s.Serve(lis); err != nil {
-			log.Fatalf("failed to serve: %v", err)
+			log.Fatalf("Failed to serve: %v", err)
 		}
 	}()
 

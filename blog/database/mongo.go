@@ -17,7 +17,7 @@ var (
 func openConnection() *mongo.Client {
 	if client == nil {
 		ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-		client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://test:test@cluster0-ia3yn.mongodb.net/test?retryWrites=true&w=majority"))
+		client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://test:test@cluster0-ia3yn.mongodb.net/test?retryWrites=true&w=majority"))
 		if err != nil {
 			log.Fatal(err)
 		}

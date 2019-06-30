@@ -89,6 +89,27 @@ func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*
 
 }
 
+func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*blogpb.DeleteBlogResponse, error) {
+	blogID := req.GetBlogId()
+
+	res, err := database.DeleteByID(blogID)
+	if err != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			err.Error(),
+		)
+	}
+
+	if res.DeletedCount == 0 {
+		return nil, status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Cannot find blog in MongoDB: %v\n", err),
+		)
+	}
+
+	return &blogpb.DeleteBlogResponse{BlogId: blogID}, nil
+}
+
 func main() {
 
 	// If we crash the go code, we get the file name and line number

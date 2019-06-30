@@ -145,3 +145,30 @@ func ReplaceOneByID(dataUpdate *blogItem, id string) error {
 
 	return nil
 }
+
+// DeleteByID function delete collection by id
+func DeleteByID(id string) (*mongo.DeleteResult, error) {
+
+	oid, err := getOid(id)
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{
+		bson.E{
+			Key:   "_id",
+			Value: oid,
+		},
+	}
+
+	res, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return nil, fmt.Errorf(fmt.Sprintf("Cannot delete object in MongoDB: %v\n", err))
+	}
+
+	if res.DeletedCount == 0 {
+		return res, err
+	}
+
+	return res, nil
+}

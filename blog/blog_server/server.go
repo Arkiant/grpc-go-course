@@ -10,6 +10,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
 	"github.com/arkiant/grpc-go-course/blog/blogpb"
@@ -171,6 +172,10 @@ func main() {
 	opts := []grpc.ServerOption{}
 	s := grpc.NewServer(opts...)
 	blogpb.RegisterBlogServiceServer(s, &server{})
+
+	// go get github.com/ktr0731/evans
+	// cli inspection
+	reflection.Register(s)
 
 	go func() {
 		fmt.Println("Starting Server...")

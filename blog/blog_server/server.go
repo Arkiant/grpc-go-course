@@ -69,7 +69,7 @@ func (*server) ReadBlog(ctx context.Context, req *blogpb.ReadBlogRequest) (*blog
 func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*blogpb.UpdateBlogResponse, error) {
 	blog := req.GetBlog()
 
-	data := database.CreateBlog(blog.GetAuthorId(), blog.GetContent(), blog.GetTitle())
+	data := database.CreateBlog(blog.GetAuthorId(), blog.GetTitle(), blog.GetContent())
 
 	if updateError := database.ReplaceOneByID(data, blog.GetId()); updateError != nil {
 		return nil, status.Errorf(
@@ -80,7 +80,7 @@ func (*server) UpdateBlog(ctx context.Context, req *blogpb.UpdateBlogRequest) (*
 
 	return &blogpb.UpdateBlogResponse{
 		Blog: &blogpb.Blog{
-			Id:       data.ID.Hex(),
+			Id:       blog.GetId(),
 			AuthorId: data.AuthorID,
 			Title:    data.Title,
 			Content:  data.Content,

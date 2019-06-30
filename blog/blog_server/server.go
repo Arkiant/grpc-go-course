@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -113,7 +114,7 @@ func (*server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*
 func (*server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
 
 	collection := database.MongoCollection()
-	cur, err := collection.Find(context.Background(), nil)
+	cur, err := collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return status.Errorf(
 			codes.Internal,

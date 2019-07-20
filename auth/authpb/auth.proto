@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package auth;
+
+option go_package = "authpb";
+
+message User {
+    string id = 1;
+    string name = 2;
+    string role = 3;
+}
+
+message LoginUserRequest {
+    string username = 2;
+    string password = 3;
+}
+
+message LoginUserResponse {
+    User user = 1;
+}
+
+message CheckUserRequest {
+    User user = 1;
+}
+
+message CheckUserResponse {
+    bool logged = 1;
+}
+
+service AuthService {
+    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse);
+    rpc CheckUser(CheckUserRequest) returns (CheckUserResponse);
+}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+
 	db "github.com/arkiant/grpc-go-course/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -31,6 +33,25 @@ func getOid(id string) (primitive.ObjectID, error) {
 	return oid, nil
 }
 
+func encryptPassword(password string) (string, error) {
+	bytePassword := []byte(password)
+	encryptedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.MinCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(encryptedPassword), nil
+}
+
+func checkPassword(password string, dbpassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(dbpassword), []byte(password))
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 // find login by username and password
 func findLogin(username string, password string) (*login, error) {
 	collection := db.MongoCollectionLogin()
@@ -42,17 +63,19 @@ func findLogin(username string, password string) (*login, error) {
 			Key:   "username",
 			Value: username,
 		},
-		bson.E{
-			Key:   "password",
-			Value: password,
-		},
 	}
+
 	res := collection.FindOne(context.Background(), filter)
 	if err := res.Decode(data); err != nil {
 		return nil, fmt.Errorf("Can't find username %s", username)
 	}
 
-	return data, nil
+	if checkPassword(password, data.Password) {
+		return data, nil
+	}
+
+	return nil, fmt.Errorf("Password not match")
+
 }
 
 //find user by object id

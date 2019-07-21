@@ -10,8 +10,7 @@ import (
 )
 
 var (
-	client     *mongo.Client
-	collection *mongo.Collection
+	client *mongo.Client
 )
 
 func openConnection() *mongo.Client {
@@ -27,26 +26,16 @@ func openConnection() *mongo.Client {
 }
 
 /*
-MongoCollection is a singleton function to get a single instance of client connected to mongodb
+MongoCollectionUsers is a singleton function to get a single instance of client connected to mongodb
 */
 func MongoCollectionUsers() *mongo.Collection {
-	if collection == nil {
-		client := openConnection()
-		collection = client.Database("mydb").Collection("users")
-		return collection
-	}
-
-	return collection
+	client := openConnection()
+	return client.Database("mydb").Collection("users")
 }
 
 func MongoCollectionLogin() *mongo.Collection {
-	if collection == nil {
-		client := openConnection()
-		collection = client.Database("mydb").Collection("login")
-		return collection
-	}
-
-	return collection
+	client := openConnection()
+	return client.Database("mydb").Collection("login")
 }
 
 /*

@@ -22,6 +22,7 @@ type user struct {
 	Role string             `bson:"role"`
 }
 
+// transform string id to primitive.ObjectID
 func getOid(id string) (primitive.ObjectID, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -30,6 +31,7 @@ func getOid(id string) (primitive.ObjectID, error) {
 	return oid, nil
 }
 
+// find login by username and password
 func findLogin(username string, password string) (*login, error) {
 	collection := db.MongoCollectionLogin()
 	defer db.CloseConnection()
@@ -53,6 +55,7 @@ func findLogin(username string, password string) (*login, error) {
 	return data, nil
 }
 
+//find user by object id
 func findUser(id primitive.ObjectID) (*user, error) {
 	collection := db.MongoCollectionUsers()
 	defer db.CloseConnection()
@@ -74,6 +77,9 @@ func findUser(id primitive.ObjectID) (*user, error) {
 	return user, nil
 }
 
+/*
+LoginUser function is responsible log user
+*/
 func LoginUser(username string, password string) (*user, error) {
 	login, err := findLogin(username, password)
 	if err != nil {

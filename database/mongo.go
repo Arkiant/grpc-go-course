@@ -26,13 +26,16 @@ func openConnection() *mongo.Client {
 }
 
 /*
-MongoCollectionUsers is a singleton function to get a single instance of client connected to mongodb
+MongoCollectionUsers function set default db mydb and query to users collection
 */
 func MongoCollectionUsers() *mongo.Collection {
 	client := openConnection()
 	return client.Database("mydb").Collection("users")
 }
 
+/*
+MongoCollectionLogin function set default db mydb and query to login collection
+*/
 func MongoCollectionLogin() *mongo.Collection {
 	client := openConnection()
 	return client.Database("mydb").Collection("login")

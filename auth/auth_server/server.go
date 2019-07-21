@@ -43,7 +43,7 @@ func (*server) CheckUser(ctx context.Context, req *authpb.CheckUserRequest) (*au
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	fmt.Println("Blog Service Started")
+	fmt.Println("Auth Service Started")
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v\n", err)
